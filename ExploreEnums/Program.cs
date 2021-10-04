@@ -60,7 +60,7 @@ namespace ExploreEnums
             return result;
         }
 
-        public static List<string> ShuffleDeck(List<string> list, int times)
+        public static List<string> RiffleShuffle(List<string> list, int times)
         {
             List<string> firstHalf = new List<string>();
             List<string> secondHalf = new List<string>();
@@ -99,15 +99,75 @@ namespace ExploreEnums
             return list;
         }
 
+        public static List<string> FisherYatesShuffle(List<string> list)
+        {
+            string temp;
+            Random rand = new Random();
+
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                int randNr = rand.Next(0, list.Count);
+
+                temp = list[i];
+                list[i] = list[randNr];
+                list[randNr] = temp;
+            }
+
+            return list;
+        }
+
+        public static void CompareDecks(int timesShuffled)
+        {
+            int timesMatched = 0;
+            List<string> sortedDeck = CreateDeck();
+
+            while (timesShuffled != 0)
+            {
+                List<string> shuffledDeck = RiffleShuffle(CreateDeck(), timesShuffled);
+
+                for (int i = 0; i < sortedDeck.Count; i++)
+                {
+                    if (sortedDeck[i] == shuffledDeck[i])
+                    {
+                        timesMatched++;
+                    }
+                }
+
+                if (timesMatched == sortedDeck.Count)
+                {
+                    Console.SetCursorPosition(0, 0);
+
+                    Console.WriteLine($"When the cards are shuffled {timesShuffled} times, then they are the same.");
+                    timesShuffled = 0;
+                }
+                else
+                {
+                    Console.SetCursorPosition(0, 5);
+                    Console.WriteLine($"There where no matching decks from 0 times shuffled to {timesShuffled} times shuffled.");
+                }
+
+                timesShuffled--;
+            }
+        }
+
         static void Main(string[] args)
         {
             CultureInfo.CurrentCulture = new CultureInfo("sv-SE");
 
             string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
+            Console.WriteLine($"\n___After 0 shuffles___\n");
+
             PrintCards(CreateDeck());
 
-            PrintCards(ShuffleDeck(CreateDeck(), 1000000));
+            Console.WriteLine($"\n___After 1 Fisher-Yates shuffle___\n");
+
+
+            PrintCards(FisherYatesShuffle(RiffleShuffle(CreateDeck(), 247)));
+
+            //PrintCards(ShuffleDeck(CreateDeck(), 247));
+
+            //CompareDecks(1000);
 
             //using (StreamWriter output = new StreamWriter(Path.Combine(docPath, "Cards.csv")))
             //{
